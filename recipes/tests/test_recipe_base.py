@@ -2,11 +2,11 @@ from django.test import TestCase
 from recipes.models import Category, Recipe
 from django.contrib.auth.models import User
 
+
 class RecipeTestBase(TestCase):
     def setUp(self) -> None:
-
         return super().setUp()
-    
+
     def make_category(self, name='Category'):
         return Category.objects.create(name=name)
 
