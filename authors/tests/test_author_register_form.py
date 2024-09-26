@@ -11,8 +11,8 @@ class AuthorRegisterFormUnitTest(TestCase):
         ('email', 'Your e-mail'),
         ('first_name', 'Ex.: John'),
         ('last_name', 'Ex.: Doe'),
-        ('password', 'Type you password'),
-        ('password2', 'Repeat you password'),
+        ('password', 'Type your password'),
+        ('password2', 'Repeat your password'),
     ])
     def test_fields_placeholder(self, field, placeholder):
         form = RegisterForm()
