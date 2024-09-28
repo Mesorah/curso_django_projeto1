@@ -1,7 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from utils.browser import make_chrome_browser
 from recipes.tests.test_recipe_base import RecipeMixin
-import time
 
 
 class RecipeBaseFunctionalTest(StaticLiveServerTestCase, RecipeMixin):
@@ -14,6 +13,3 @@ class RecipeBaseFunctionalTest(StaticLiveServerTestCase, RecipeMixin):
         self.browser.quit()
 
         return super().tearDown()
-
-    def sleep(self, seconds=5):
-        time.sleep(seconds)
