@@ -1,6 +1,7 @@
 import os
 
-from django.db.models import F, Q
+from django.db.models import Q
+from django.db.models.aggregates import Count
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.http.response import Http404
@@ -8,20 +9,20 @@ from django.shortcuts import render
 from django.views.generic import DetailView, ListView
 
 from recipes.models import Recipe
+from tag.models import Tag
 from utils.pagination import make_pagination
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
 
 def theory(request, *args, **kwargs):
-    recipes = Recipe.objects.filter(
-        id=F('author__id')
-    )[:1]
+    recipes = Recipe.objects.get_published()
 
-    print(recipes)
+    number_of_recipes = Recipe.objects.aggregate(number=Count('id'))
 
     return render(request, 'recipes/pages/theory.html', context={
-        'recipes': recipes
+        'recipes': recipes,
+        'number_of_recipes': number_of_recipes['number']
     })
 
 
@@ -38,6 +39,8 @@ class RecipeListViewBase(ListView):
         ).order_by('-id')
 
         queryset = queryset.select_related('author', 'category')
+
+        queryset = queryset.prefetch_related('tags')
 
         return queryset
 
@@ -121,6 +124,34 @@ class RecipeDetail(DetailView):
         )
 
         return queryset
+
+
+class RecipeListViewTag(RecipeListViewBase):
+    template_name = 'recipes/pages/tag.html'
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+
+        queryset = queryset.filter(tags__slug=self.kwargs.get('slug', ''))
+
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        page_title = Tag.objects.filter(
+            slug=self.kwargs.get('slug', '')
+        ).first()
+
+        if not page_title:
+            page_title = 'No recipes found'
+
+        page_title = f'{page_title} - Tag |'
+
+        context.update({
+            'page_title': page_title,
+        })
+
+        return context
 
 
 class RecipeListViewSearch(RecipeListViewBase):
