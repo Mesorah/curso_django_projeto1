@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Concat
@@ -49,7 +48,7 @@ class Recipe(models.Model):
         Category, on_delete=models.SET_NULL,
         null=True, blank=True, default=None,)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    tags = GenericRelation(Tag, related_query_name='recipes')
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.title
