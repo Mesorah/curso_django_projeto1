@@ -38,7 +38,9 @@ class RecipeListViewBase(ListView):
             is_published=True
         ).order_by('-id')
 
-        queryset = queryset.select_related('author', 'category')
+        queryset = queryset.select_related(
+            'author', 'category', 'author__profile'
+        )
 
         queryset = queryset.prefetch_related('tags')
 
