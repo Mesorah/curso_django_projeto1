@@ -7,6 +7,7 @@ from django.db.models.functions import Concat
 from django.forms import ValidationError
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
 from tag.models import Tag
 
@@ -33,7 +34,7 @@ class RecipeManager(models.Manager):
 
 class Recipe(models.Model):
     objects = RecipeManager()
-    title = models.CharField(max_length=65)
+    title = models.CharField(max_length=65, verbose_name=_('Title'))
     description = models.CharField(max_length=165)
     slug = models.SlugField(unique=True)
     preparation_time = models.IntegerField()
@@ -83,3 +84,7 @@ class Recipe(models.Model):
             raise ValidationError(error_messages)
 
         return super().clean(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Recipe')
+        verbose_name_plural = _('Recipes')
