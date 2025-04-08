@@ -1,62 +1,33 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.generics import (  # noqa E501
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer, TagSerializer
 from tag.models import Tag
 
 
-@api_view(http_method_names=['get', 'post'])
-def recipe_api_list(request):
-    if request.method == 'GET':
-        recipes = Recipe.objects.get_published()[:10]
-        serializer = RecipeSerializer(
-            instance=recipes,
-            many=True,
-            context={'request': request}
-        )
-
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = RecipeSerializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-        # serializer.save()
-
-        return Response(
-            serializer.validated_data,
-            status=status.HTTP_201_CREATED
-        )
-
-        # if serializer.is_valid():
-        #     serializer.save()
-
-        #     return Response(
-        #         serializer.validated_data,
-        #         status=status.HTTP_201_CREATED
-        #     )
-
-        # return Response(
-        #     serializer.errors,
-        #     status=status.HTTP_400_BAD_REQUEST
-        # )
+class RecipeAPIv2Pagination(PageNumberPagination):
+    page_size = 2
 
 
-@api_view()
-def recipe_api_detail(request, pk):
-    recipe = get_object_or_404(
-        Recipe.objects.get_published(),
-        pk=pk
-    )
-    serializer = RecipeSerializer(
-        instance=recipe,
-        many=False,
-        context={'request': request}
-    )
-    return Response(serializer.data)
+class RecipeAPIv2List(ListCreateAPIView):
+    queryset = Recipe.objects.get_published()
+    serializer_class = RecipeSerializer
+    pagination_class = RecipeAPIv2Pagination
+
+
+class RecipeAPIv2Detail(RetrieveUpdateDestroyAPIView):
+    queryset = Recipe.objects.get_published()
+    serializer_class = RecipeSerializer
+    pagination_class = RecipeAPIv2Pagination
 
 
 @api_view()
