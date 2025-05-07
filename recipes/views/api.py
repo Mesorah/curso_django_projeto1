@@ -20,6 +20,7 @@ class RecipeAPIv2ViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = RecipeAPIv2Pagination
     permission_classes = [IsAuthenticatedOrReadOnly,]
+    http_method_names = ['get', 'options', 'head', 'patch', 'post', 'delete']
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -39,43 +40,6 @@ class RecipeAPIv2ViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['example'] = 'this is in context now'
-
-    #     return context
-
-    # def get_object(self):
-    #     pk = self.kwargs.get('pk', '')
-    #     obj = get_object_or_404(
-    #         self.get_queryset(),
-    #         pk=pk
-    #     )
-
-    #     self.check_object_permissions(self.request, obj)
-
-    #     return obj
-
-    # def list(self, request, *args, **kwargs):
-    #     print('REQUEST', request.user)
-    #     print(request.user.is_authenticated)
-    #     return super().list(request, *args, **kwargs)
-
-    # def partial_update(self, request, *args, **kwargs):
-    #     recipe = self.get_object()
-    #     serializer = RecipeSerializer(
-    #         instance=recipe,
-    #         data=request.data,
-    #         many=False,
-    #         context={'request': request},
-    #         partial=True,
-    #     )
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(
-    #         serializer.data,
-    #     )
 
 
 @api_view()
