@@ -12,7 +12,7 @@ from tag.models import Tag
 
 
 class RecipeAPIv2Pagination(PageNumberPagination):
-    page_size = 100
+    page_size = 10
 
 
 class RecipeAPIv2ViewSet(ModelViewSet):
